@@ -1,45 +1,57 @@
+// =======Options START=======
 var authConfig = {
-  siteName: "vanthanh", // 网站名称
-  version: "1.1.2", // 程序版本
+  siteName: "goindex",
+  version: "1.1.1", 
   theme: "acrou",
   client_id: "202264815644.apps.googleusercontent.com",
   client_secret: "X4Z3ca8xfWDb1Voo-F9a7ZxJ",
-  refresh_token: "1//0dXmutqszNZqCCgYIARAAGA0SNwF-L9IrjrfhMUv1MQLoLUykL3OAxPfosbYEIL3VJPYeCw_xAVwXjrNfTrtlsa6r1J0bUcR0EX4", // 授权 token
-  "roots": [
-	{
-		"id": "root",
-		"name": "My Drive",
-		"user": "olsen.ngt",
-		"pass": "THANHhoa0987",
-		"protect_file_link": false
-	}
-],
+  refresh_token: "",
+  roots: [
+    {
+      id: "",
+      name: "TeamDrive",
+      pass: "",
+    },
+    {
+      id: "root",
+      name: "PrivateDrive",
+      user: "",
+      pass: "",
+      protect_file_link: true,
+    },
+    {
+      id: "",
+      name: "folder1",
+      pass: "",
+    },
+  ],
   default_gd: 0,
   files_list_page_size: 50,
   search_result_list_page_size: 50,
-  enable_cors_file_down: true,
+  enable_cors_file_down: false,
   enable_password_file_verify: false,
 };
 
 var themeOptions = {
   cdn: "https://cdn.jsdelivr.net/gh/alx-xlx/goindex",
-  version: "2.0.8-darkmode-0.1",
+  version: "2.0.5-darkmode-0.1",
   languages: "en",
   render: {
-    head_md: true,
-    readme_md: true,
-    desc: true,
+    head_md: false,
+    readme_md: false,
+    desc: false,
   },
-  video: {
-    api: "",
-    autoplay: true,
+  player: {
+    api: "https://api.jsonpop.cn/demo/blplyaer/?url=",
   },
-  audio: {},
 };
 // =======Options END=======
 
+/**
+ * global functions
+ */
 const FUNCS = {
-  formatSearchKeyword: function(keyword) {
+  formatSearchKeyword: function (keyword) {
     let nothing = "";
     let space = " ";
     if (!keyword) return nothing;
@@ -50,6 +62,10 @@ const FUNCS = {
   },
 };
 
+/**
+ * global consts
+ * @type {{folder_mime_type: string, default_file_fields: string, gd_root_type: {share_drive: number, user_drive: number, sub_folder: number}}}
+ */
 const CONSTS = new (class {
   default_file_fields =
     "parents,id,name,mimeType,modifiedTime,createdTime,fileExtension,size";
@@ -69,10 +85,26 @@ function html(current_drive_order = 0, model = {}) {
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/> <title>${authConfig.siteName}</title> <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1"><meta name="description" content="Combining the power of Cloudflare Workers and Google Drive will allow you to index your files on the browser on Cloudflare Workers."><meta name="theme-color" content="#FF3300"><meta name="application-name" content="goindex"><meta name="robots" content="index, follow"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://i.imgur.com/rOyuGjA.gif"><meta name="twitter:description" content="Combining the power of Cloudflare Workers and Google Drive will allow you to index your files on the browser on Cloudflare Workers."><meta name="keywords" content="goindex, google, drive, goindex, gdindex, classic, material, workers-script, oauth-consent-screen, google-drive, cloudflare-workers, themes"><meta name="twitter:title" content="Goindex"><meta name="twitter:url" content="https://github.com/alx-xlx/goindex"><link rel="shortcut icon" href="https://i.imgur.com/rOyuGjA.gif"><meta property="og:site_name" content="Goindex"><meta property="og:type" content="website"><meta property="og:image" content="https://i.imgur.com/rOyuGjA.gif"><meta property="og:description" content="Combining the power of Cloudflare Workers and Google Drive will allow you to index your files on the browser on Cloudflare Workers."><meta property="og:title" content="Goindex"><meta property="og:url" content="https://github.com/alx-xlx/goindex"><link rel="apple-touch-icon" href="https://i.imgur.com/rOyuGjA.gif"><link rel="icon" type="image/png" sizes="32x32" href="https://i.imgur.com/rOyuGjA.gif"><meta name="google-site-verification" content="OD_AXMYw-V6ID9xQUb2Wien9Yy8IJSyfBUyejYNB3CU"/><script async src="https://www.googletagmanager.com/gtag/js?id=UA-86099016-6"></script><script>window.dataLayer=window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date()); gtag('config', 'UA-86099016-6');</script><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-MR47R4M');</script> <style>@import url(${themeOptions.cdn}@${themeOptions.version}/goindex-acrou/dist/style.min.css); </style> <script>window.gdconfig=JSON.parse('${JSON.stringify({version: authConfig.version, themeOptions: themeOptions,})}'); window.themeOptions=JSON.parse('${JSON.stringify(themeOptions)}'); window.gds=JSON.parse('${JSON.stringify( authConfig.roots.map((it)=> it.name) )}'); window.MODEL=JSON.parse('${JSON.stringify(model)}'); window.current_drive_order=${current_drive_order}; </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
+  <title>${authConfig.siteName}</title>
+  <style>
+    @import url(${themeOptions.cdn}@${themeOptions.version}/goindex-acrou/dist/style.min.css);
+  </style>
+  <script>
+    window.gdconfig = JSON.parse('${JSON.stringify({
+      version: authConfig.version,
+      themeOptions: themeOptions,
+    })}');
+    window.themeOptions = JSON.parse('${JSON.stringify(themeOptions)}');
+    window.gds = JSON.parse('${JSON.stringify(
+      authConfig.roots.map((it) => it.name)
+    )}');
+    window.MODEL = JSON.parse('${JSON.stringify(model)}');
+    window.current_drive_order = ${current_drive_order};
+  </script>
 </head>
 <body>
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MR47R4M"height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="app"></div>
     <script src="${themeOptions.cdn}@${
     themeOptions.version
@@ -218,12 +250,7 @@ async function handleRequest(request) {
       })
     );
   } else {
-    if (
-      path
-        .split("/")
-        .pop()
-        .toLowerCase() == ".password"
-    ) {
+    if (path.split("/").pop().toLowerCase() == ".password") {
       return basic_auth_res || new Response("", { status: 404 });
     }
     let file = await gd.file(path);
@@ -844,9 +871,9 @@ class googleDrive {
   }
 
   sleep(ms) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       let i = 0;
-      setTimeout(function() {
+      setTimeout(function () {
         console.log("sleep" + ms);
         i++;
         if (i >= 2) reject(new Error("i>=2"));
@@ -856,7 +883,7 @@ class googleDrive {
   }
 }
 
-String.prototype.trim = function(char) {
+String.prototype.trim = function (char) {
   if (char) {
     return this.replace(
       new RegExp("^\\" + char + "+|\\" + char + "+$", "g"),
